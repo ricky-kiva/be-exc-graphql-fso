@@ -1,0 +1,14 @@
+{
+  "name": "be-graphql-exc-fso",
+  "version": "1.0.0",
+  "description": "Exercising building GraphQL server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "GraphQL"
+  ],
+  "author": "Rickyslash",
+  "license": "ISC"
+}
