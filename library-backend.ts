@@ -1,16 +1,10 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
-
-const typeDefs = `
-  type Query {
-    dummy: Int
-  }
-`;
+import typeDefs from './graphql/schemas';
+import queryRsv from './graphql/resolvers/queryRsv';
 
 const resolvers = {
-  Query: {
-    dummy: (): number => Math.floor(Math.random() * 100) + 1,
-  }
+  Query: queryRsv
 };
 
 const server = new ApolloServer({
