@@ -1,6 +1,11 @@
 import authors from '../../data/authors';
 import books from '../../data/books';
+import { Author } from '../../types/Author';
 import { Book } from '../../types/Book';
+
+const allAuthors = (): Author[] => {
+  return authors;
+};
 
 const allBooks = (): Book[] => {
   return books;
@@ -19,6 +24,7 @@ const dummy = (): number => {
 };
 
 const queryRsv = {
+  allAuthors,
   allBooks,
   authorCount,
   bookCount,

@@ -1,6 +1,7 @@
 type Query {
-  dummy: Int,
-  bookCount: Int,
-  authorCount: Int
+  allAuthors: [Author!]!
   allBooks: [Book!]!
+  authorCount: Int
+  bookCount: Int
+  dummy: Int
 }
