@@ -4,6 +4,7 @@
   "description": "Exercising building GraphQL server",
   "main": "index.js",
   "scripts": {
+    "dev": "ts-node-dev library-backend.ts",
     "lint": "eslint ."
   },
   "keywords": [
@@ -17,6 +18,7 @@
     "@types/eslint__js": "^8.42.3",
     "eslint": "^9.35.0",
     "globals": "^16.4.0",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.43.0"
   },
