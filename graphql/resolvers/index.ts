@@ -1,4 +1,4 @@
-import { authorQueryRslv, authorRslv } from './authorRslv';
+import { authorMutationRslv, authorQueryRslv, authorRslv } from './authorRslv';
 import { bookMutationRslv, bookQueryRslv } from './bookRslv';
 
 const dummy = (): number => {
@@ -12,7 +12,8 @@ const queryRslv = {
 };
 
 const mutationRslv = {
-  ...bookMutationRslv
+  ...bookMutationRslv,
+  ...authorMutationRslv
 };
 
 const resolvers = {

@@ -9,3 +9,10 @@ extend type Query {
   allAuthors: [Author!]!
   authorCount: Int
 }
+
+extend type Mutation {
+  editAuthor(
+    name: String!
+    born: Int!
+  ): Author
+}
