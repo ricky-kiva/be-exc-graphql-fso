@@ -1,12 +1,12 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import typeDefs from './graphql/schemas';
-import queryRsv from './graphql/resolvers/queryRsv';
-import authorRsv from './graphql/resolvers/authorRsv';
+import queryRslv from './graphql/resolvers/queryRslv';
+import { authorRslv } from './graphql/resolvers/authorRslv';
 
 const resolvers = {
-  Query: queryRsv,
-  Author: authorRsv
+  Query: queryRslv,
+  Author: authorRslv
 };
 
 const server = new ApolloServer({

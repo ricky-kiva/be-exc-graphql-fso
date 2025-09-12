@@ -4,3 +4,8 @@ type Author {
   bookCount: Int!
   id: ID!
 }
+
+extend type Query {
+  allAuthors: [Author!]!
+  authorCount: Int
+}
