@@ -9,12 +9,19 @@ const allAuthors = (): Author[] => {
 };
 
 const allBooks = (_: unknown, args: AllBooksArgs): Book[] => {
+  let filteredBooks = [...books];
+  
   if (args.author) {
     const search = args.author.toLowerCase();
-    return books.filter((book) => book.author.toLowerCase().includes(search));
+    filteredBooks = filteredBooks.filter((b) => b.author.toLowerCase().includes(search));
   }
 
-  return books;
+  if (args.genre) {
+    const search = args.genre.toLowerCase();
+    filteredBooks = filteredBooks.filter((b) => b.genres.some((g) => g.toLowerCase() === search));
+  }
+
+  return filteredBooks;
 };
 
 const authorCount = (): number => {

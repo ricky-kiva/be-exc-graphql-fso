@@ -1,6 +1,6 @@
 type Query {
   allAuthors: [Author!]!
-  allBooks(author: String): [Book!]!
+  allBooks(author: String, genre: String): [Book!]!
   authorCount: Int
   bookCount: Int
   dummy: Int

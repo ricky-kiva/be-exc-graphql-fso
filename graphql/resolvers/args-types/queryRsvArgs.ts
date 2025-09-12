@@ -1,3 +1,4 @@
 export interface AllBooksArgs {
-  author?: string
+  author?: string,
+  genre?: string
 }
