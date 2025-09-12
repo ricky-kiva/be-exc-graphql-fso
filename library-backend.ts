@@ -3,10 +3,12 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 import typeDefs from './graphql/schemas';
 import queryRslv from './graphql/resolvers/queryRslv';
 import { authorRslv } from './graphql/resolvers/authorRslv';
+import mutationRslv from './graphql/resolvers/mutationRslv';
 
 const resolvers = {
   Query: queryRslv,
-  Author: authorRslv
+  Author: authorRslv,
+  Mutation: mutationRslv
 };
 
 const server = new ApolloServer({

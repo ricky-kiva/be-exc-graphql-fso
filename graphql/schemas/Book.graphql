@@ -1,6 +1,6 @@
 type Book {
   title: String!
-  published: String!
+  published: Int!
   author: String!
   genres: [String!]!
   id: ID!
@@ -9,4 +9,13 @@ type Book {
 extend type Query {
   allBooks(author: String, genre: String): [Book!]!
   bookCount: Int
+}
+
+extend type Mutation {
+  addBook(
+    title: String!
+    author: String!
+    published: Int!
+    genres: [String!]!
+  ): Book
 }
