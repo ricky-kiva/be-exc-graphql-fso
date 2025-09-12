@@ -1,7 +1,7 @@
 import { GraphQLError } from 'graphql';
 import books from '../../data/books';
 import { Book } from '../../types/Book';
-import { AllBooksArgs } from './args-types/queryRslvArgs';
+import { AllBooksArgs } from './args-types/bookRslvArgs';
 import { v1 } from 'uuid';
 import authors from '../../data/authors';
 import { Author } from '../../types/Author';
