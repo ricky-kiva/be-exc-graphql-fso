@@ -1,7 +1,12 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
 
-const schema = new mongoose.Schema({
+export interface AuthorDocument extends Document {
+  name: string;
+  born?: number;
+}
+
+const schema = new mongoose.Schema<AuthorDocument>({
   name: {
     type: String,
     required: true,
@@ -15,4 +20,4 @@ const schema = new mongoose.Schema({
 
 schema.plugin(uniqueValidator);
 
-export default mongoose.model('Author', schema);
+export default mongoose.model<AuthorDocument>('Author', schema);
