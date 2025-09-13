@@ -1,29 +1,28 @@
 import { GraphQLError } from 'graphql';
-import authors from '../../data/authors';
-import books from '../../data/books';
-import { Author } from '../../types/Author';
 import { EditAuthorArgs } from './args-types/authorRslvArgs';
+import Author, { AuthorDocument } from '../../db/schemas/Author';
+import Book from '../../db/schemas/Book';
 
 const authorRslv = {
-  bookCount(root: Author): number {
-    return books.filter((book) => (book.author === root.name)).length;
+  bookCount: async (root: AuthorDocument): Promise<number> => {
+    return Book.countDocuments({ author: root._id });
   }
 };
 
 const authorQueryRslv = {
-  allAuthors(): Author[] {
-    return authors;
+  allAuthors: async (): Promise<AuthorDocument[]> => {
+    return Author.find({});
   },
-  authorCount(): number {
-    return authors.length;
+  authorCount: async (): Promise<number> => {
+    return Author.countDocuments({});
   }
 };
 
 const authorMutationRslv = {
-  editAuthor(_: unknown, args: EditAuthorArgs): Author {
-    const author = authors.find(
-      (a) => a.name.toLowerCase() === args.name.toLowerCase()
-    );
+  editAuthor: async (_: unknown, args: EditAuthorArgs): Promise<AuthorDocument> => {
+    const author: (AuthorDocument | null) = await Author.findOne({
+      name: new RegExp(`^${args.name}$`, 'i')
+    });
 
     if (!author) {
       throw new GraphQLError(
@@ -32,7 +31,9 @@ const authorMutationRslv = {
       );
     }
 
-    author.born = args.born;  
+    author.born = args.born;
+
+    await author.save();
   
     return author;
   }

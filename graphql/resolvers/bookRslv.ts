@@ -1,61 +1,65 @@
 import { GraphQLError } from 'graphql';
-import books from '../../data/books';
-import { Book } from '../../types/Book';
 import { AllBooksArgs } from './args-types/bookRslvArgs';
-import { v1 } from 'uuid';
-import authors from '../../data/authors';
-import { Author } from '../../types/Author';
+import Book, { BookDocument } from '../../db/schemas/Book';
+import Author, { AuthorDocument } from '../../db/schemas/Author';
 
 const bookQueryRslv = {
-  allBooks(_: unknown, args: AllBooksArgs): Book[] {
-    let filteredBooks = [...books];
+  allBooks: async (_: unknown, args: AllBooksArgs): Promise<BookDocument[]> => {
+    const query: Record<string, unknown> = {};
   
     if (args.author) {
-      const search = args.author.toLowerCase();
-      filteredBooks = filteredBooks.filter((b) => b.author.toLowerCase().includes(search));
+      const authors: AuthorDocument[] = await Author.find({ name: new RegExp(args.author, 'i')});
+
+      if (authors.length === 0) return [];
+
+      const authorIds = authors.map((a) => a._id);
+
+      query.author = { $in: authorIds };
     }
 
     if (args.genre) {
-      const search = args.genre.toLowerCase();
-      filteredBooks = filteredBooks.filter((b) => b.genres.some((g) => g.toLowerCase() === search));
+      query.genres = {
+        $elemMatch: {
+          $regex: new RegExp(args.genre, 'i')
+        } 
+      };
     }
 
-    return filteredBooks;
+    return Book.find(query).populate('author');
   },
-  bookCount(): number {
-    return books.length;
+  bookCount: async (): Promise<number> => {
+    return Book.countDocuments();
   }
 };
 
 const bookMutationRslv = {
-  addBook(_: unknown, args: Omit<Book, "id">): Book {
-    if (books.some((b) => b.title.toLowerCase().trim() === args.title.toLowerCase().trim())) {
+  addBook: async (_: unknown, args: Omit<BookDocument, "id">): Promise<BookDocument> => {
+    const existingBook = await Book.findOne({ title: new RegExp(args.title, 'i') });
+    
+    if (existingBook) {
       throw new GraphQLError(
         `Book with title "${args.title}" already exists`,
         { extensions: { code: 'BAD_USER_INPUT' } }
       );
     }
 
-    if (!(authors.some((a) => a.name.toLowerCase().trim() === args.author.toLowerCase().trim()))) {
-      const newAuthor: Author = {
-        id: v1(),
-        name: args.author
-      };
+    let author = await Author.findOne({ name: args.author });
 
-      authors.push(newAuthor);
+    if (!author) {
+      author = new Author({ name: args.author });
+      await author.save();
     }
 
-    const newBook: Book = {
-      id: v1(),
+    const newBook = new Book({
       title: args.title,
       published: args.published,
-      author: args.author,
+      author: author._id,
       genres: args.genres
-    };
+    });
 
-    books.push(newBook);
+    await newBook.save();
 
-    return newBook;
+    return newBook.populate('author');
   }
 };
 
