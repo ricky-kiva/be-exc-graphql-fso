@@ -1,5 +1,5 @@
 import { GraphQLError } from 'graphql';
-import { AllBooksArgs } from './args-types/bookRslvArgs';
+import { AddBookArgs, AllBooksArgs } from './args-types/bookRslvArgs';
 import Book, { BookDocument } from '../../db/schemas/Book';
 import Author, { AuthorDocument } from '../../db/schemas/Author';
 
@@ -33,7 +33,19 @@ const bookQueryRslv = {
 };
 
 const bookMutationRslv = {
-  addBook: async (_: unknown, args: Omit<BookDocument, "id">): Promise<BookDocument> => {
+  addBook: async (_: unknown, args: AddBookArgs): Promise<BookDocument> => {
+    if (args.title.length < 5) {
+      throw new GraphQLError('Book title must be at least 5 characters long', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      });
+    }
+
+    if (args.author.length < 4) {
+      throw new GraphQLError('Author name must be at least 4 characters long', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      });
+    }
+
     const existingBook = await Book.findOne({ title: new RegExp(args.title, 'i') });
     
     if (existingBook) {

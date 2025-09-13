@@ -20,6 +20,12 @@ const authorQueryRslv = {
 
 const authorMutationRslv = {
   editAuthor: async (_: unknown, args: EditAuthorArgs): Promise<AuthorDocument> => {
+    if (args.name.length < 4) {
+      throw new GraphQLError('Author name must be at least 4 characters long', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      });
+    }
+
     const author: (AuthorDocument | null) = await Author.findOne({
       name: new RegExp(`^${args.name}$`, 'i')
     });
