@@ -2,6 +2,7 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import typeDefs from './graphql/schemas';
 import resolvers from './graphql/resolvers';
+import connectToMongoDB from './db/connect';
 
 const server = new ApolloServer({
   typeDefs,
@@ -9,6 +10,8 @@ const server = new ApolloServer({
 });
 
 async function startServer() {
+  await connectToMongoDB();
+  
   const { url } = await startStandaloneServer(server, {
     listen: {
       port: 4000
