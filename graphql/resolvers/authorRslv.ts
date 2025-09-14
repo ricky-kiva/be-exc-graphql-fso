@@ -1,7 +1,7 @@
-import { GraphQLError } from 'graphql';
 import { EditAuthorArgs } from './args-types/authorRslvArgs';
 import Author, { AuthorDocument } from '../../db/schemas/Author';
 import Book from '../../db/schemas/Book';
+import { throwBadUserInput } from '../exception/exception';
 
 const authorRslv = {
   bookCount: async (root: AuthorDocument): Promise<number> => {
@@ -20,22 +20,13 @@ const authorQueryRslv = {
 
 const authorMutationRslv = {
   editAuthor: async (_: unknown, args: EditAuthorArgs): Promise<AuthorDocument> => {
-    if (args.name.length < 4) {
-      throw new GraphQLError('Author name must be at least 4 characters long', {
-        extensions: { code: 'BAD_USER_INPUT' }
-      });
-    }
+    if (args.name.length < 4) throwBadUserInput("Author name must be at least 4 characters long");
 
     const author: (AuthorDocument | null) = await Author.findOne({
       name: new RegExp(`^${args.name}$`, 'i')
     });
 
-    if (!author) {
-      throw new GraphQLError(
-        `Author with name "${args.name}" not found`,
-        { extensions: { code: 'BAD_USER_INPUT' } }
-      );
-    }
+    if (!author) throwBadUserInput(`Author with name "${args.name}" not found`);   
 
     author.born = args.born;
 

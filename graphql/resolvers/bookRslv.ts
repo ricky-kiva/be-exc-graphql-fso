@@ -1,7 +1,8 @@
-import { GraphQLError } from 'graphql';
 import { AddBookArgs, AllBooksArgs } from './args-types/bookRslvArgs';
 import Book, { BookDocument } from '../../db/schemas/Book';
 import Author, { AuthorDocument } from '../../db/schemas/Author';
+import { throwBadUserInput } from '../exception/exception';
+import { Types } from 'mongoose';
 
 const bookQueryRslv = {
   allBooks: async (_: unknown, args: AllBooksArgs): Promise<BookDocument[]> => {
@@ -12,7 +13,7 @@ const bookQueryRslv = {
 
       if (authors.length === 0) return [];
 
-      const authorIds = authors.map((a) => a._id);
+      const authorIds = authors.map((a) => a._id as Types.ObjectId);
 
       query.author = { $in: authorIds };
     }
@@ -34,26 +35,12 @@ const bookQueryRslv = {
 
 const bookMutationRslv = {
   addBook: async (_: unknown, args: AddBookArgs): Promise<BookDocument> => {
-    if (args.title.length < 5) {
-      throw new GraphQLError('Book title must be at least 5 characters long', {
-        extensions: { code: 'BAD_USER_INPUT' }
-      });
-    }
-
-    if (args.author.length < 4) {
-      throw new GraphQLError('Author name must be at least 4 characters long', {
-        extensions: { code: 'BAD_USER_INPUT' }
-      });
-    }
+    if ((args.title.length < 5)) throwBadUserInput("Book title must be at least 5 characters long");
+    if ((args.author.length < 4)) throwBadUserInput("Author name must be at least 4 characters long");
 
     const existingBook = await Book.findOne({ title: new RegExp(args.title, 'i') });
     
-    if (existingBook) {
-      throw new GraphQLError(
-        `Book with title "${args.title}" already exists`,
-        { extensions: { code: 'BAD_USER_INPUT' } }
-      );
-    }
+    if (existingBook) throwBadUserInput(`Book with title "${args.title}" already exists`);
 
     let author = await Author.findOne({ name: args.author });
 
@@ -65,7 +52,7 @@ const bookMutationRslv = {
     const newBook = new Book({
       title: args.title,
       published: args.published,
-      author: author._id,
+      author: author._id as Types.ObjectId,
       genres: args.genres
     });
 
