@@ -1,5 +1,6 @@
 import { authorMutationRslv, authorQueryRslv, authorRslv } from './authorRslv';
 import { bookMutationRslv, bookQueryRslv } from './bookRslv';
+import { userMutationRslv } from './UserRslv';
 
 const dummy = (): number => {
   return Math.floor(Math.random() * 100) + 1;
@@ -13,7 +14,8 @@ const queryRslv = {
 
 const mutationRslv = {
   ...bookMutationRslv,
-  ...authorMutationRslv
+  ...authorMutationRslv,
+  ...userMutationRslv
 };
 
 const resolvers = {
