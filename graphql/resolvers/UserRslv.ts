@@ -4,8 +4,15 @@ import { throwBadUserInput } from '../exception/exception';
 import { CreateUserArgs, LoginArgs } from './args-types/userRslvArgs';
 import { Token } from '../../types/Token';
 import { Types } from 'mongoose';
+import { Context } from '../types/Context';
 
 const USER_HARDCODED_PASSWORD = 'secret';
+
+const userQueryRslv = {
+  me: (_: unknown, __: unknown, context: Context) => {
+    return context.currentUser;
+  }
+};
 
 const userMutationRslv = {
   createUser: async (_: unknown, args: CreateUserArgs): Promise<UserDocument> => {
@@ -37,5 +44,6 @@ const userMutationRslv = {
 };
 
 export {
+  userQueryRslv,
   userMutationRslv
 };
