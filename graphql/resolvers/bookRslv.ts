@@ -3,6 +3,8 @@ import Book, { BookDocument } from '../../db/schemas/Book';
 import Author, { AuthorDocument } from '../../db/schemas/Author';
 import { throwBadUserInput } from '../exception/exception';
 import { Types } from 'mongoose';
+import { pubsub } from '../subscription/pubsub';
+import { BookWithAuthor } from '../../db/types/populated';
 
 const bookQueryRslv = {
   allBooks: async (_: unknown, args: AllBooksArgs): Promise<BookDocument[]> => {
@@ -58,11 +60,24 @@ const bookMutationRslv = {
 
     await newBook.save();
 
+    const populatedBook = await newBook.populate('author') as BookWithAuthor;
+
+    await pubsub.publish("BOOK_ADDED", { bookAdded: populatedBook });
+
     return newBook.populate('author');
+  }
+};
+
+const bookSubscriptionRslv = {
+  bookAdded: {
+    subscribe: () => {
+      return pubsub.asyncIterableIterator("BOOK_ADDED");
+    }
   }
 };
 
 export {
   bookQueryRslv,
-  bookMutationRslv
+  bookMutationRslv,
+  bookSubscriptionRslv
 };

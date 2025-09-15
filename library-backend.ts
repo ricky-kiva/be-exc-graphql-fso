@@ -12,6 +12,8 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import cors from 'cors';
 import { expressMiddleware } from '@as-integrations/express5';
+import { useServer } from 'graphql-ws/use/ws';
+import { WebSocketServer } from 'ws';
 
 async function startServer() {
   const PORT = 4000;
@@ -21,9 +23,28 @@ async function startServer() {
   const app = express();
   const httpServer = http.createServer(app);
 
+  const wsServer = new WebSocketServer({
+    server: httpServer,
+    path: '/'
+  });
+
+  const schema = makeExecutableSchema({ typeDefs, resolvers });
+  const serverCleanup = useServer({ schema }, wsServer);
+
   const server = new ApolloServer({
     schema: makeExecutableSchema({ typeDefs, resolvers }),
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      {
+        serverWillStart() {
+          return Promise.resolve({
+            async drainServer() {
+              await serverCleanup.dispose();
+            },
+          });
+        }
+      }
+    ]
   });
 
   await server.start();

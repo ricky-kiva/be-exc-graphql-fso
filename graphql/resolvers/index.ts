@@ -1,5 +1,5 @@
 import { authorMutationRslv, authorQueryRslv, authorRslv } from './authorRslv';
-import { bookMutationRslv, bookQueryRslv } from './bookRslv';
+import { bookMutationRslv, bookQueryRslv, bookSubscriptionRslv } from './bookRslv';
 import { userMutationRslv, userQueryRslv } from './UserRslv';
 
 const dummy = (): number => {
@@ -19,9 +19,14 @@ const mutationRslv = {
   ...userMutationRslv
 };
 
+const subscriptionRslv = {
+  ...bookSubscriptionRslv
+};
+
 const resolvers = {
   Query: queryRslv,
   Mutation: mutationRslv,
+  Subscription: subscriptionRslv,
   Author: authorRslv
 };
 
