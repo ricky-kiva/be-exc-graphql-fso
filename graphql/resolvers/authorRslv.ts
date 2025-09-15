@@ -1,17 +1,10 @@
 import { EditAuthorArgs } from './args-types/authorRslvArgs';
 import Author, { AuthorDocument } from '../../db/schemas/Author';
-import Book from '../../db/schemas/Book';
 import { throwBadUserInput } from '../exception/exception';
-
-const authorRslv = {
-  bookCount: async (root: AuthorDocument): Promise<number> => {
-    return Book.countDocuments({ author: root._id });
-  }
-};
 
 const authorQueryRslv = {
   allAuthors: async (): Promise<AuthorDocument[]> => {
-    return Author.find({});
+    return Author.find({}).populate('bookCount');
   },
   authorCount: async (): Promise<number> => {
     return Author.countDocuments({});
@@ -32,12 +25,11 @@ const authorMutationRslv = {
 
     await author.save();
   
-    return author;
+    return author.populate('bookCount');;
   }
 };
 
 export {
-  authorRslv,
   authorQueryRslv,
   authorMutationRslv
 };

@@ -1,4 +1,4 @@
-import { authorMutationRslv, authorQueryRslv, authorRslv } from './authorRslv';
+import { authorMutationRslv, authorQueryRslv } from './authorRslv';
 import { bookMutationRslv, bookQueryRslv, bookSubscriptionRslv } from './bookRslv';
 import { userMutationRslv, userQueryRslv } from './UserRslv';
 
@@ -27,7 +27,6 @@ const resolvers = {
   Query: queryRslv,
   Mutation: mutationRslv,
   Subscription: subscriptionRslv,
-  Author: authorRslv
 };
 
 export default resolvers;

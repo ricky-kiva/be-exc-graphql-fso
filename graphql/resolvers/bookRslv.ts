@@ -28,7 +28,12 @@ const bookQueryRslv = {
       };
     }
 
-    return Book.find(query).populate('author');
+    return Book.find(query).populate({
+      path: 'author',
+      populate: {
+        path: 'bookCount'
+      }
+    });
   },
   bookCount: async (): Promise<number> => {
     return Book.countDocuments();
@@ -36,7 +41,7 @@ const bookQueryRslv = {
 };
 
 const bookMutationRslv = {
-  addBook: async (_: unknown, args: AddBookArgs): Promise<BookDocument> => {
+  addBook: async (_: unknown, args: AddBookArgs): Promise<BookWithAuthor> => {
     if ((args.title.length < 5)) throwBadUserInput("Book title must be at least 5 characters long");
     if ((args.author.length < 4)) throwBadUserInput("Author name must be at least 4 characters long");
 
@@ -60,11 +65,16 @@ const bookMutationRslv = {
 
     await newBook.save();
 
-    const populatedBook = await newBook.populate('author') as BookWithAuthor;
+    const populatedBook = await newBook.populate({
+      path: 'author',
+      populate: { 
+        path: 'bookCount' 
+      }
+    }) as BookWithAuthor;
 
     await pubsub.publish("BOOK_ADDED", { bookAdded: populatedBook });
 
-    return newBook.populate('author');
+    return populatedBook;
   }
 };
 

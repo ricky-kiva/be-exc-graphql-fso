@@ -18,6 +18,16 @@ const schema = new mongoose.Schema<AuthorDocument>({
   }
 });
 
+schema.virtual('bookCount', {
+  ref: 'Book',
+  localField: '_id',
+  foreignField: 'author',
+  count: true
+});
+
+schema.set('toJSON', { virtuals: true });
+schema.set('toObject', { virtuals: true });
+
 schema.plugin(uniqueValidator);
 
 export default mongoose.model<AuthorDocument>('Author', schema);
